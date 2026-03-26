@@ -1,0 +1,31 @@
+{
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "googleapis": "^171.4.0"
+  },
+  "name": "daily-summary-agent",
+  "version": "1.0.0",
+  "description": "Summarises emails and calendar events",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx --env-file=.env agent.ts",
+    "get-token": "tsx --env-file=.env get-token.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tedyeates/Daily-Summary-Agent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/tedyeates/Daily-Summary-Agent/issues"
+  },
+  "homepage": "https://github.com/tedyeates/Daily-Summary-Agent#readme"
+}
