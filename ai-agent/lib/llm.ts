@@ -14,7 +14,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 // import OpenAI from 'openai';
 
 function loadContext(filename: string): string {
-  const filePath = join(process.cwd(), 'context', filename);
+  const filePath = join(process.cwd(), 'ai-agent', 'context', filename);
   return readFileSync(filePath, 'utf-8');
 }
 
@@ -36,7 +36,7 @@ export async function runPrompt(userPrompt: string): Promise<string> {
   // -------------------------------------------------------------------------
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     systemInstruction: systemPrompt,
   });
   const result = await model.generateContent(userPrompt);

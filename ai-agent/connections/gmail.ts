@@ -8,12 +8,14 @@ export interface EmailSummary {
   snippet: string;
   date: string;
   isUnread: boolean;
+  isStarred: boolean;
+  isImportant: boolean;
 }
 
 /**
- * Fetches emails from the last 24 hours.
- * Returns a structured list of EmailSummary objects — the agent prompt
- * builder decides how to format them for the LLM.
+ * Fetches emails from the last 24 hours from the inbox only.
+ * Excludes sent, spam, drafts, and trash via `in:inbox`.
+ * Starred and important status are derived from each message's labelIds.
  */
 export async function fetchRecentEmails(
   maxResults = 20,
@@ -23,7 +25,7 @@ export async function fetchRecentEmails(
 
   const listRes = await gmail.users.messages.list({
     userId: 'me',
-    q: 'newer_than:1d',
+    q: 'in:inbox newer_than:1d',
     maxResults,
   });
 
@@ -38,19 +40,20 @@ export async function fetchRecentEmails(
         metadataHeaders: ['From', 'Subject', 'Date'],
       });
 
-      const headers = full.data.payload?.headers ?? [];
-      const get = (name: string) =>
+      const headers  = full.data.payload?.headers ?? [];
+      const labelIds = full.data.labelIds ?? [];
+      const get      = (name: string) =>
         headers.find((h) => h.name === name)?.value ?? '';
 
-      const labelIds = full.data.labelIds ?? [];
-
       return {
-        id: msg.id!,
-        from: get('From'),
-        subject: get('Subject'),
-        snippet: full.data.snippet ?? '',
-        date: get('Date'),
-        isUnread: labelIds.includes('UNREAD'),
+        id:          msg.id!,
+        from:        get('From'),
+        subject:     get('Subject'),
+        snippet:     full.data.snippet ?? '',
+        date:        get('Date'),
+        isUnread:    labelIds.includes('UNREAD'),
+        isStarred:   labelIds.includes('STARRED'),
+        isImportant: labelIds.includes('IMPORTANT'),
       };
     }),
   );
@@ -60,14 +63,25 @@ export async function fetchRecentEmails(
 
 /**
  * Formats email summaries into a plain-text block for the LLM prompt.
+ * Starred and important flags are surfaced as inline tags so the model
+ * can weight them appropriately in its summary.
  */
 export function formatEmailsForPrompt(emails: EmailSummary[]): string {
   if (emails.length === 0) return 'No emails in the last 24 hours.';
 
   return emails
-    .map(
-      (e) =>
-        `- [${e.isUnread ? 'UNREAD' : 'read'}] From: ${e.from}\n  Subject: ${e.subject}\n  Preview: ${e.snippet}`,
-    )
+    .map((e) => {
+      const tags: string[] = [];
+      if (e.isUnread)    tags.push('UNREAD');
+      if (e.isStarred)   tags.push('STARRED');
+      if (e.isImportant) tags.push('IMPORTANT');
+      const tagStr = tags.length > 0 ? `[${tags.join(' · ')}] ` : '[read] ';
+
+      return (
+        `- ${tagStr}From: ${e.from}\n` +
+        `  Subject: ${e.subject}\n` +
+        `  Preview: ${e.snippet}`
+      );
+    })
     .join('\n\n');
 }
