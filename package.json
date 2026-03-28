@@ -19,7 +19,8 @@
     "gmail": "tsx --env-file=.env ai-agent/run-gmail.ts",
     "calendar": "tsx --env-file=.env ai-agent/run-calendar.ts",
     "telegram": "tsx --env-file=.env ai-agent/run-telegram.ts",
-    "buildprompt": "tsx --env-file=.env ai-agent/run-buildprompt.ts"
+    "buildprompt": "tsx --env-file=.env ai-agent/run-buildprompt.ts",
+    "schedule": "tsx ai-agent/agent.ts"
   },
   "repository": {
     "type": "git",
