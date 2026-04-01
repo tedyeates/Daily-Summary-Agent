@@ -41,6 +41,7 @@ Structure every brief in this order:
    {time} — {title}
      • {detail or location link as <a href="URL">Join</a>}
    Omit the detail line if there is nothing useful to add.
+   Only show events that are happening today.
 
 4. <b>This week</b>
    Same format as Today but prefix with the date:
