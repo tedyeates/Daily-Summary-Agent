@@ -15,7 +15,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsx --env-file=.env ai-agent/agent.ts",
-    "get-token": "tsx --env-file=.env get-token.ts",
+    "get-token": "tsx --env-file=.env ai-agent/get-token.ts",
     "gmail": "tsx --env-file=.env ai-agent/run-gmail.ts",
     "calendar": "tsx --env-file=.env ai-agent/run-calendar.ts",
     "telegram": "tsx --env-file=.env ai-agent/run-telegram.ts",
